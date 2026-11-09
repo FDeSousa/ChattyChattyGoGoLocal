@@ -45,7 +45,7 @@ private struct HubBridge: MLXLMCommon.Downloader {
             throw LocalModelServiceError.invalidRepositoryID(id)
         }
         let revision = revision ?? "main"
-        return try await upstream.downloadSnapshot(
+        let url = try await upstream.downloadSnapshot(
             of: repoID,
             revision: revision,
             matching: patterns,
@@ -53,6 +53,8 @@ private struct HubBridge: MLXLMCommon.Downloader {
                 progressHandler(progress)
             }
         )
+        LocalModelDownloadStore.record(repositoryID: id, snapshotPath: url.path)
+        return url
     }
 }
 

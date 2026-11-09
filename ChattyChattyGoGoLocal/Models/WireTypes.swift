@@ -203,6 +203,37 @@ struct LocalModelInfo: Identifiable, Hashable, Sendable {
     }
 }
 
+
+/// Records where Hugging Face snapshots live, keyed by repository ID,
+/// so downloaded state survives across launches.
+enum LocalModelDownloadStore {
+    private static let key = "localModelSnapshots"
+
+    static var snapshots: [String: String] {
+        get { UserDefaults.standard.dictionary(forKey: key) as? [String: String] ?? [:] }
+        set { UserDefaults.standard.set(newValue, forKey: key) }
+    }
+
+    static func record(repositoryID: String, snapshotPath: String) {
+        var map = snapshots
+        map[repositoryID] = snapshotPath
+        snapshots = map
+    }
+
+    static func snapshotURL(for repositoryID: String) -> URL? {
+        guard let path = snapshots[repositoryID] else { return nil }
+        let url = URL(fileURLWithPath: path, isDirectory: true)
+        let hasWeights = (try? FileManager.default.contentsOfDirectory(atPath: path).contains { $0.hasSuffix(".safetensors") }) ?? false
+        return hasWeights ? url : nil
+    }
+
+    static func remove(repositoryID: String) {
+        var map = snapshots
+        map.removeValue(forKey: repositoryID)
+        snapshots = map
+    }
+}
+
 /// Categories for local-model presets.
 enum LocalModelCatalog {
     static let presetModels: [LocalModelInfo] = [
@@ -273,7 +304,7 @@ enum LocalModelCatalog {
             isDeviceOptimized: true
         ),
         LocalModelInfo(
-            id: "lamma-3.1-8b-instruct-mlx-4bit",
+            id: "llama-3.1-8b-instruct-mlx-4bit",
             displayName: "Llama 3.1 8B Instruct 4-bit",
             repositoryID: "mlx-community/Llama-3.1-8B-Instruct-4bit",
             downloadSizeBytes: 4_500_000_000,
@@ -308,7 +339,13 @@ enum LocalModelCatalog {
             let candidate = base.appendingPathComponent(model.id, isDirectory: true)
             let hasWeights = (try? FileManager.default.contentsOfDirectory(atPath: candidate.path).contains { $0.hasSuffix(".safetensors") }) ?? false
             var copy = model
-            copy.downloadedDirectory = hasWeights ? candidate : nil
+            if hasWeights {
+                copy.downloadedDirectory = candidate
+            } else if let snapshot = LocalModelDownloadStore.snapshotURL(for: model.repositoryID) {
+                copy.downloadedDirectory = snapshot
+            } else {
+                copy.downloadedDirectory = nil
+            }
             return copy
         }
     }
