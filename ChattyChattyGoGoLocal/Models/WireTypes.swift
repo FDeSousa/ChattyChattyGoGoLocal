@@ -237,37 +237,83 @@ enum LocalModelDownloadStore {
 /// Categories for local-model presets.
 enum LocalModelCatalog {
     static let presetModels: [LocalModelInfo] = [
+        // Tiniest tier — smoke tests and very constrained hosts.
         LocalModelInfo(
             id: "qwen3-0.6b-mlx-4bit",
             displayName: "Qwen3 0.6B 4-bit",
             repositoryID: "mlx-community/Qwen3-0.6B-4bit",
             downloadSizeBytes: 396_000_000,
             runtimeMemoryEstimate: 650_000_000,
-            summary: "Tiny, fast baseline for smoke tests, prompt experiments and very memory-constrained hosts.",
+            summary: "Tiniest reasoner; offline chat baseline (MMLU 52.8).",
             bestFor: ["Smoke tests", "Constrained hosts"],
             parameters: "0.6B",
             isDeviceOptimized: true
         ),
         LocalModelInfo(
+            id: "llama-3.2-1b-instruct-mlx-4bit",
+            displayName: "Llama 3.2 1B Instruct 4-bit",
+            repositoryID: "mlx-community/Llama-3.2-1B-Instruct-4bit",
+            downloadSizeBytes: 724_000_000,
+            runtimeMemoryEstimate: 900_000_000,
+            summary: "Weakest Llama; do not expect miracles — a 128K-context curiosity (MMLU 49.3).",
+            bestFor: ["Tiny hosts", "Comparison"],
+            parameters: "1.2B",
+            isDeviceOptimized: true
+        ),
+        LocalModelInfo(
+            id: "gemma-3-1b-it-mlx-4bit",
+            displayName: "Gemma 3 1B Instruct 4-bit",
+            repositoryID: "mlx-community/gemma-3-1b-it-qat-4bit",
+            downloadSizeBytes: 500_000_000,
+            runtimeMemoryEstimate: 800_000_000,
+            summary: "Tiny English-centric tasks (HellaSwag 62.3 10-shot).",
+            bestFor: ["Quick answers"],
+            parameters: "1B",
+            isDeviceOptimized: true
+        ),
+        LocalModelInfo(
+            id: "deepseek-r1-distill-qwen-1.5b-mlx-4bit",
+            displayName: "DeepSeek R1 Distill Qwen 1.5B 4-bit",
+            repositoryID: "mlx-community/DeepSeek-R1-Distill-Qwen-1.5B-4bit",
+            downloadSizeBytes: 950_000_000,
+            runtimeMemoryEstimate: 1_150_000_000,
+            summary: "Long chain-of-thought at 0.8 GB; no thinking toggle (AIME'24 28.9).",
+            bestFor: ["Reasoning", "Maths"],
+            parameters: "1.5B",
+            isDeviceOptimized: true
+        ),
+        LocalModelInfo(
+            id: "lfm2-1.2b-mlx-4bit",
+            displayName: "LFM2 1.2B 4-bit",
+            repositoryID: "mlx-community/LFM2-1.2B-4bit",
+            downloadSizeBytes: 700_000_000,
+            runtimeMemoryEstimate: 900_000_000,
+            summary: "Liquid AI edge model with first-class tool calling — the Liquid pick that runs in MLX today.",
+            bestFor: ["Tool use", "Agents", "Tiny hosts"],
+            parameters: "1.2B",
+            isDeviceOptimized: true
+        ),
+        // Small chat tier — the practical 8 GiB sweet spot.
+        LocalModelInfo(
             id: "qwen3-1.7b-mlx-4bit",
             displayName: "Qwen3 1.7B 4-bit",
             repositoryID: "mlx-community/Qwen3-1.7B-4bit",
-            downloadSizeBytes: 1_050_000_000,
+            downloadSizeBytes: 900_000_000,
             runtimeMemoryEstimate: 1_350_000_000,
-            summary: "Small instruction model that still gives useful general answers on 8 GiB-class devices.",
+            summary: "Small reasoner; on-device chat (MMLU 62.6).",
             bestFor: ["Everyday questions", "Tiny constrained hosts"],
             parameters: "1.7B",
             isDeviceOptimized: true
         ),
         LocalModelInfo(
-            id: "gemma-3-1b-it-mlx-4bit",
-            displayName: "Gemma 3 1B Instruction TurboQuant 4-bit",
-            repositoryID: "mlx-community/gemma-3-1b-it-qat-4bit",
-            downloadSizeBytes: 700_000_000,
-            runtimeMemoryEstimate: 950_000_000,
-            summary: "Very small Google instruction model, useful for qualitative comparison without needing desktop memory.",
-            bestFor: ["Quick answers", "Instruction following"],
-            parameters: "1B",
+            id: "smollm3-3b-mlx-4bit",
+            displayName: "SmolLM3 3B 4-bit",
+            repositoryID: "mlx-community/SmolLM3-3B-4bit",
+            downloadSizeBytes: 1_700_000_000,
+            runtimeMemoryEstimate: 2_100_000_000,
+            summary: "Reasoning and no-think chat in one model (AIME'25 36.7).",
+            bestFor: ["General assistance", "Reasoning"],
+            parameters: "3B",
             isDeviceOptimized: true
         ),
         LocalModelInfo(
@@ -285,31 +331,54 @@ enum LocalModelCatalog {
             id: "llama-3.2-3b-instruct-mlx-4bit",
             displayName: "Llama 3.2 3B Instruct 4-bit",
             repositoryID: "mlx-community/Llama-3.2-3B-Instruct-4bit",
-            downloadSizeBytes: 1_750_000_000,
+            downloadSizeBytes: 1_800_000_000,
             runtimeMemoryEstimate: 2_150_000_000,
-            summary: "Meta’s compact instruction model, included as a small-device comparison point.",
+            summary: "Safe cross-hardware default; 128K context (MMLU 63.4).",
             bestFor: ["General assistance", "Compact host testing"],
-            parameters: "3B",
+            parameters: "3.2B",
+            isDeviceOptimized: true
+        ),
+        LocalModelInfo(
+            id: "phi-4-mini-instruct-mlx-4bit",
+            displayName: "Phi-4-mini Instruct 4-bit",
+            repositoryID: "mlx-community/Phi-4-mini-instruct-4bit",
+            downloadSizeBytes: 2_100_000_000,
+            runtimeMemoryEstimate: 2_500_000_000,
+            summary: "Strong bench-per-GB; English-first (MMLU 67.3).",
+            bestFor: ["General assistance", "English tasks"],
+            parameters: "3.8B",
+            isDeviceOptimized: true
+        ),
+        LocalModelInfo(
+            id: "phi-4-mini-reasoning-mlx-4bit",
+            displayName: "Phi-4-mini Reasoning 4-bit",
+            repositoryID: "mlx-community/Phi-4-mini-reasoning-4bit",
+            downloadSizeBytes: 2_100_000_000,
+            runtimeMemoryEstimate: 2_500_000_000,
+            summary: "Maths-grade chain-of-thought on phone (AIME'24 57.5).",
+            bestFor: ["Maths", "Reasoning"],
+            parameters: "3.8B",
             isDeviceOptimized: true
         ),
         LocalModelInfo(
             id: "qwen3-4b-mlx-4bit",
             displayName: "Qwen3 4B 4-bit",
             repositoryID: "mlx-community/Qwen3-4B-4bit",
-            downloadSizeBytes: 2_450_000_000,
+            downloadSizeBytes: 2_200_000_000,
             runtimeMemoryEstimate: 2_900_000_000,
-            summary: "Strong enough for more meaningful local-chat evaluation while still plausible on 8 GiB-class devices.",
-            bestFor: ["General assistance", "Structured answers"],
+            summary: "Best ≤4B 2025 reasoner (MMLU 73.0); 32K (128K YaRN).",
+            bestFor: ["Structured answers", "Reasoning"],
             parameters: "4B",
             isDeviceOptimized: true
         ),
+        // Reference tier — for measuring memory/speed on constrained hosts.
         LocalModelInfo(
             id: "llama-3.1-8b-instruct-mlx-4bit",
             displayName: "Llama 3.1 8B Instruct 4-bit",
             repositoryID: "mlx-community/Llama-3.1-8B-Instruct-4bit",
             downloadSizeBytes: 4_500_000_000,
             runtimeMemoryEstimate: 5_200_000_000,
-            summary: "A larger reference point for memory and speed measurements on constrained devices.",
+            summary: "Larger reference point for memory and speed measurements on constrained devices.",
             bestFor: ["Benchmarking", "Local evaluation"],
             parameters: "8B"
         ),
@@ -319,11 +388,12 @@ enum LocalModelCatalog {
             repositoryID: "mlx-community/Hermes-3-Llama-3.1-8B-4bit",
             downloadSizeBytes: 4_700_000_000,
             runtimeMemoryEstimate: 5_400_000_000,
-            summary: "Instruction-tuned Llama 3.1 variant for comparing local model quality at the 8B point.",
+            summary: "Instruction-tuned Llama 3.1 variant for comparing local model quality at 8B.",
             bestFor: ["Evaluation", "Instruction following"],
             parameters: "8B"
         )
     ]
+
 
     static func installedModelURLs() -> [URL] {
         FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).map {

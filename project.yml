@@ -61,7 +61,7 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: pt.com.desousa.filipe.ChattyChattyGoGoLocal
         PRODUCT_NAME: ChattyChattyGoGoLocal
-        INFOPLIST_KEY_CFBundleDisplayName: "ChattyChatty GoGo Local"
+        INFOPLIST_KEY_CFBundleDisplayName: "Local"
         INFOPLIST_KEY_NSFaceIDUsageDescription: "Face ID keeps your private conversations locked when you leave the app."
         INFOPLIST_KEY_NSCalendarsFullAccessUsageDescription: "ChattyChatty GoGo can find or create calendar events when you ask it to. The app asks before sharing event details or creating an event."
         INFOPLIST_KEY_NSRemindersFullAccessUsageDescription: "ChattyChatty GoGo can create reminders when you ask it to, after showing you the proposed reminder for confirmation."
